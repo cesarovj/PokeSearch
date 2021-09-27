@@ -110,48 +110,59 @@ const fetchPokemon = (name, id) => {
 
 // get card data for pokemon
 const fetchPokemonCard = (name) => {
-  fetch(`https://api.pokemontcg.io/v2/cards/?q=name:pikachu`)
+  fetch(`https://api.pokemontcg.io/v2/cards/?q=name:${name}`)
     .then((response) => response.json())
     .then((data) => {
-      console.log(data);
+      const rarityArr = [];
+
       for (let i = 0; i < data.data.length; i++) {
         const rarity = data.data[i].rarity;
-        console.log(rarity);
-
-        // const pic = data.data[i].images.small;
-        // for (let i = 0; i < rarity.length; i++) {
-        //   // const pic = data.data[i].images.small;
-
-        //   switch (rarity) {
-        //     case 'Promo':
-        //       pokeCardUrl = pic;
-        //       break;
-        //     case 'Rare Rainbow':
-        //       pokeCardUrl = pic;
-        //       break;
-        //     case 'Rare Secret':
-        //       pokeCardUrl = pic;
-        //       break;
-        //     case 'Rare Holo':
-        //       pokeCardUrl = pic;
-        //       break;
-        //     case 'Rare':
-        //       pokeCardUrl = pic;
-        //       break;
-        //     case 'Common':
-        //       pokeCardUrl = pic;
-        //       break;
-        //     case 'Uncommon':
-        //       pokeCardUrl = pic;
-        //       break;
-        //     default:
-        //       break;
-        //   }
-        // }
+        rarityArr.push(rarity);
       }
 
-      cardScreen.innerHTML = `<img src="${pokeCardUrl}" />`;
-    });
+      const promoIdx = rarityArr.indexOf('Promo');
+      const rainbowIdx = rarityArr.indexOf('Rare Rainbow');
+      const secretIdx = rarityArr.indexOf('Rare Secret');
+      const holoIdx = rarityArr.indexOf('Rare Holo');
+      const rareIdx = rarityArr.indexOf('Rare');
+      const commonIdx = rarityArr.indexOf('Common');
+      const uncommonIdx = rarityArr.indexOf('Uncommon');
+
+      if (promoIdx != -1) {
+        pokeCardUrl = data.data[promoIdx].images.small;
+        avgPrice = data.data[promoIdx].cardmarket.prices.averageSellPrice;
+        colorType = lowercase(data.data[promoIdx].types[0]);
+      } else if (rainbowIdx != -1) {
+        pokeCardUrl = data.data[rainbowIdx].images.small;
+        avgPrice = data.data[rainbowIdx].cardmarket.prices.averageSellPrice;
+        colorType = lowercase(data.data[rainbowIdx].types[0]);
+      } else if (secretIdx != -1) {
+        pokeCardUrl = data.data[secretIdx].images.small;
+        avgPrice = data.data[secretIdx].cardmarket.prices.averageSellPrice;
+        colorType = lowercase(data.data[secretIdx].types[0]);
+      } else if (holoIdx != -1) {
+        pokeCardUrl = data.data[holoIdx].images.small;
+        avgPrice = data.data[holoIdx].cardmarket.prices.averageSellPrice;
+        colorType = lowercase(data.data[holoIdx].types[0]);
+      } else if (rareIdx != -1) {
+        pokeCardUrl = data.data[rareIdx].images.small;
+        avgPrice = data.data[rareIdx].cardmarket.prices.averageSellPrice;
+        colorType = lowercase(data.data[rareIdx].types[0]);
+      } else if (commonIdx != -1) {
+        pokeCardUrl = data.data[commonIdx].images.small;
+        avgPrice = data.data[commonIdx].cardmarket.prices.averageSellPrice;
+        colorType = lowercase(data.data[commonIdx].types[0]);
+      } else if (uncommonIdx != -1) {
+        pokeCardUrl = data.data[uncommonIdx].images.small;
+        avgPrice = data.data[uncommonIdx].cardmarket.prices.averageSellPrice;
+        colorType = lowercase(data.data[uncommonIdx].types[0]);
+      } else {
+        console.log('No Match');
+      }
+
+      cardScreen.innerHTML = `<img src="${pokeCardUrl}" /><div class="price-container ${colorType}"><h4 class="price-text">Average Sell Price: $${avgPrice}</h4></div>`;
+    })
+    .catch((err) => console.log(err));
 };
 
 // get pokemon stats
@@ -159,43 +170,154 @@ const fetchPokemonStats = (name) => {
   fetch(`https://api.pokemontcg.io/v2/cards/?q=name:${name}`)
     .then((response) => response.json())
     .then((data) => {
+      const rarityArr = [];
+
       for (let i = 0; i < data.data.length; i++) {
         const rarity = data.data[i].rarity;
-        // const stats = data.data[i].images.small;
-
-        const priceLookUp = data.data[i].cardmarket.prices.averageSellPrice;
-
-        console.log(priceLookUp);
-
-        switch (rarity) {
-          case 'Promo':
-            price = priceLookUp;
-            break;
-          case 'Rare Rainbow':
-            price = priceLookUp;
-            break;
-          case 'Rare Secret':
-            price = priceLookUp;
-            break;
-          case 'Rare Holo':
-            price = priceLookUp;
-            break;
-          case 'Rare':
-            price = priceLookUp;
-            break;
-          case 'Common':
-            price = priceLookUp;
-            break;
-          case 'Uncommon':
-            price = priceLookUp;
-            break;
-          default:
-            break;
-        }
+        rarityArr.push(rarity);
       }
 
-      cardScreen.innerHTML = `<p>${price}/>`;
-    });
+      const promoIdx = rarityArr.indexOf('Promo');
+      const rainbowIdx = rarityArr.indexOf('Rare Rainbow');
+      const secretIdx = rarityArr.indexOf('Rare Secret');
+      const holoIdx = rarityArr.indexOf('Rare Holo');
+      const rareIdx = rarityArr.indexOf('Rare');
+      const commonIdx = rarityArr.indexOf('Common');
+      const uncommonIdx = rarityArr.indexOf('Uncommon');
+
+      if (promoIdx != -1) {
+        pokeType = data.data[promoIdx].types[0];
+        pokeHP = data.data[promoIdx].hp;
+        pokeAttackName1 = data.data[promoIdx].attacks[0].name;
+        pokeAttackText1 = data.data[promoIdx].attacks[0].text;
+        if (data.data[promoIdx].attacks.length > 1) {
+          pokeAttackName2 = data.data[promoIdx].attacks[1].name;
+          pokeAttackText2 = data.data[promoIdx].attacks[1].text;
+        } else {
+          pokeAttackName2 = '';
+          pokeAttackText2 = '';
+        }
+        if (data.data[promoIdx].weaknesses) {
+          pokeWeakness = data.data[promoIdx].weaknesses[0].type;
+        } else {
+          pokeWeakness = '';
+        }
+        colorType = lowercase(data.data[promoIdx].types[0]);
+      } else if (rainbowIdx != -1) {
+        pokeType = data.data[rainbowIdx].types[0];
+        pokeHP = data.data[rainbowIdx].hp;
+        pokeAttackName1 = data.data[rainbowIdx].attacks[0].name;
+        pokeAttackText1 = data.data[rainbowIdx].attacks[0].text;
+        if (data.data[rainbowIdx].attacks.length > 1) {
+          pokeAttackName2 = data.data[rainbowIdx].attacks[1].name;
+          pokeAttackText2 = data.data[rainbowIdx].attacks[1].text;
+        } else {
+          pokeAttackName2 = '';
+          pokeAttackText2 = '';
+        }
+        if (data.data[rainbowIdx].weaknesses) {
+          pokeWeakness = data.data[ranbowIdx].weaknesses[0].type;
+        } else {
+          pokeWeakness = '';
+        }
+        colorType = lowercase(data.data[rainbowIdx].types[0]);
+      } else if (secretIdx != -1) {
+        pokeType = data.data[secretIdx].types[0];
+        pokeHP = data.data[secretIdx].hp;
+        pokeAttackName1 = data.data[secretIdx].attacks[0].name;
+        pokeAttackText1 = data.data[secretIdx].attacks[0].text;
+        if (data.data[secretIdx].attacks.length > 1) {
+          pokeAttackName2 = data.data[secretIdx].attacks[1].name;
+          pokeAttackText2 = data.data[secretIdx].attacks[1].text;
+        } else {
+          pokeAttackName2 = '';
+          pokeAttackText2 = '';
+        }
+        if (data.data[secretIdx].weaknesses) {
+          pokeWeakness = data.data[secretIdx].weaknesses[0].type;
+        } else {
+          pokeWeakness = '';
+        }
+        colorType = lowercase(data.data[secretIdx].types[0]);
+      } else if (holoIdx != -1) {
+        pokeType = data.data[holoIdx].types[0];
+        pokeHP = data.data[holoIdx].hp;
+        pokeAttackName1 = data.data[holoIdx].attacks[0].name;
+        pokeAttackText1 = data.data[holoIdx].attacks[0].text;
+        if (data.data[holoIdx].attacks.length > 1) {
+          pokeAttackName2 = data.data[holoIdx].attacks[1].name;
+          pokeAttackText2 = data.data[holoIdx].attacks[1].text;
+        } else {
+          pokeAttackName2 = '';
+          pokeAttackText2 = '';
+        }
+        if (data.data[holoIdx].weaknesses) {
+          pokeWeakness = data.data[holoIdx].weaknesses[0].type;
+        } else {
+          pokeWeakness = '';
+        }
+        colorType = lowercase(data.data[holoIdx].types[0]);
+      } else if (rareIdx != -1) {
+        pokeType = data.data[rareIdx].types[0];
+        pokeHP = data.data[rareIdx].hp;
+        pokeAttackName1 = data.data[rareIdx].attacks[0].name;
+        pokeAttackText1 = data.data[rareIdx].attacks[0].text;
+        if (data.data[rareIdx].attacks.length > 1) {
+          pokeAttackName2 = data.data[rareIdx].attacks[1].name;
+          pokeAttackText2 = data.data[rareIdx].attacks[1].text;
+        } else {
+          pokeAttackName2 = '';
+          pokeAttackText2 = '';
+        }
+        if (data.data[rareIdx].weaknesses) {
+          pokeWeakness = data.data[rareIdx].weaknesses[0].type;
+        } else {
+          pokeWeakness = '';
+        }
+        colorType = lowercase(data.data[rareIdx].types[0]);
+      } else if (commonIdx != -1) {
+        pokeType = data.data[commonIdx].types[0];
+        pokeHP = data.data[commonIdx].hp;
+        pokeAttackName1 = data.data[commonIdx].attacks[0].name;
+        pokeAttackText1 = data.data[commonIdx].attacks[0].text;
+        if (data.data[commonIdx].attacks.length > 1) {
+          pokeAttackName2 = data.data[commonIdx].attacks[1].name;
+          pokeAttackText2 = data.data[commonIdx].attacks[1].text;
+        } else {
+          pokeAttackName2 = '';
+          pokeAttackText2 = '';
+        }
+        if (data.data[commonIdx].weaknesses) {
+          pokeWeakness = data.data[commonIdx].weaknesses[0].type;
+        } else {
+          pokeWeakness = '';
+        }
+        colorType = lowercase(data.data[commonIdx].types[0]);
+      } else if (uncommonIdx != -1) {
+        pokeType = data.data[uncommonIdx].types[0];
+        pokeHP = data.data[uncommonIdx].hp;
+        pokeAttackName1 = data.data[uncommonIdx].attacks[0].name;
+        pokeAttackText1 = data.data[uncommonIdx].attacks[0].text;
+        if (data.data[uncommonIdx].attacks.length > 1) {
+          pokeAttackName2 = data.data[uncommonIdx].attacks[1].name;
+          pokeAttackText2 = data.data[uncommonIdx].attacks[1].text;
+        } else {
+          pokeAttackName2 = '';
+          pokeAttackText2 = '';
+        }
+        if (data.data[uncommonIdx].weaknesses) {
+          pokeWeakness = data.data[uncommonIdx].weaknesses[0].type;
+        } else {
+          pokeWeakness = '';
+        }
+        colorType = lowercase(data.data[uncommonIdx].types[0]);
+      } else {
+        console.log('No Match');
+      }
+
+      cardScreen.innerHTML = `<div class="stats-container ${colorType}"><p class="stats-text"><b><u>Type</u></b> <br> ${pokeType} <br><br> <b><u>HP</u></b> <br> ${pokeHP} <br><br> <b><u>Attacks</u></b> <br> ${pokeAttackName1} <br> <sub>${pokeAttackText1}</sub> <br><br> ${pokeAttackName2} <br> <sub>${pokeAttackText2}</sub>  <br><br> <b><u>Weakness</u></b> <br> ${pokeWeakness}</p></div>`;
+    })
+    .catch((err) => console.log(err));
 };
 
 // click handlers
@@ -255,6 +377,9 @@ statButton.addEventListener('click', handleStatsButtonClick);
 
 for (const pokeItem of pokeList) {
   pokeItem.addEventListener('click', handleListItemClick);
+  pokeItem.addEventListener('click', () => {
+    cardScreen.innerHTML = '';
+  });
 }
 
 // initialize app
